@@ -45,7 +45,7 @@ public class CartService {
     }
 
     @Transactional
-    public void removeItem(int productId, String identity, boolean isUsername) {
+    public void removeItem(Long productId, String identity, boolean isUsername) {
         Optional<CartItem> item = Optional.empty();
         if (isUsername) {
             item = cartItemRepository.findByUsernameAndProductId(identity, productId);

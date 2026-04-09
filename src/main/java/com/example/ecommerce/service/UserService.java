@@ -19,7 +19,14 @@ public class UserService {
     }
 
     public User registerUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return null; // Username already exists
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Set default role if not present
+        if (user.getRole() == null) {
+            user.setRole("ROLE_USER");
+        }
         return userRepository.save(user);
     }
 

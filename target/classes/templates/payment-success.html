@@ -3,28 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed | Nebula</title>
+    <title>Payment Success | Nebula</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .success-card {
+            max-width: 600px;
+            margin: 100px auto;
+            text-align: center;
+            padding: 60px 40px;
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .check-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .order-id {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50px;
+            font-family: monospace;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
-<body style="background: var(--background);">
-    <div class="container success-container">
-        <div class="auth-container" style="max-width: 600px;">
-            <i class="fa-solid fa-circle-check success-icon"></i>
-            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Order Confirmed!</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 30px;">Thank you for shopping with Nebula. Your order has been placed successfully and is being processed.</p>
+<body class="dark-theme">
+    <nav class="glass">
+        <a th:href="@{/}" class="logo">NEBULA</a>
+    </nav>
+
+    <main class="container">
+        <div class="success-card">
+            <div class="check-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p style="color: var(--text-muted); line-height: 1.6;">
+                Your order has been placed successfully. A confirmation email has been sent to your registered address.
+            </p>
             
-            <div style="background: var(--background); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: left; margin-bottom: 30px;">
-                <div style="font-weight: 700; margin-bottom: 10px;">Order Number: #NEB-948271</div>
-                <div style="font-size: 0.9rem; color: var(--text-muted);">A confirmation email has been sent to your registered address.</div>
+            <div class="order-id">
+                Order ID: #NB-<span th:text="${#strings.toUpperCase(#strings.randomAlphanumeric(10))}"></span>
             </div>
 
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <a th:href="@{/}" class="btn btn-primary">Continue Shopping</a>
-                <a href="#" class="btn" style="border: 1px solid var(--border);">Track Order</a>
+            <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
+                <a th:href="@{/}" class="btn btn-primary" style="padding: 12px 30px;">Continue Shopping</a>
+                <a th:href="@{/account}" class="btn" style="padding: 12px 30px; border: 1px solid var(--border);">Track Order</a>
             </div>
         </div>
-    </div>
+    </main>
 </body>
 </html>

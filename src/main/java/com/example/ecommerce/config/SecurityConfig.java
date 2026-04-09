@@ -22,8 +22,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/register", "/login", "/cart/**", "/checkout/**", "/payment-success").permitAll()
+            .csrf().ignoringAntMatchers("/api/payment/**").and()
+            .authorizeRequests((requests) -> requests
+                .antMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/register", "/login", "/cart/**", "/checkout/**", "/payment-success", "/api/payment/**", "/product/**").permitAll()
+                .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form

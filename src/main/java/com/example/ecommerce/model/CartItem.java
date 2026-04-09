@@ -1,6 +1,6 @@
 package com.example.ecommerce.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "cart_items")
@@ -12,7 +12,7 @@ public class CartItem {
     private String sessionId;
     private String username;
 
-    private int productId;
+    private Long productId;
     private String productName;
     private double price;
     private int quantity;
@@ -20,7 +20,7 @@ public class CartItem {
 
     public CartItem() {}
 
-    public CartItem(Long id, String sessionId, String username, int productId, String productName, double price, int quantity, String imageUrl) {
+    public CartItem(Long id, String sessionId, String username, Long productId, String productName, double price, int quantity, String imageUrl) {
         this.id = id;
         this.sessionId = sessionId;
         this.username = username;
@@ -45,8 +45,8 @@ public class CartItem {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public int getProductId() { return productId; }
-    public void setProductId(int productId) { this.productId = productId; }
+    public Long getProductId() { return productId; }
+    public void setProductId(Long productId) { this.productId = productId; }
 
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }

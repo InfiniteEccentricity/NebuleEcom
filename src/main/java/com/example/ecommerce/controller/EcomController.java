@@ -4,13 +4,15 @@ import com.example.ecommerce.model.CartItem;
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.service.CartService;
+import com.example.ecommerce.service.ProductService;
 import com.example.ecommerce.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -23,21 +25,12 @@ public class EcomController {
 
     private final CartService cartService;
     private final UserService userService;
+    private final ProductService productService;
 
-    public EcomController(CartService cartService, UserService userService) {
+    public EcomController(CartService cartService, UserService userService, ProductService productService) {
         this.cartService = cartService;
         this.userService = userService;
-    }
-
-    private List<Product> getProducts() {
-        return Arrays.asList(
-            new Product(1, "Nebula Pro Smartphone", 74699.00, "Electronics", "/images/phone.png", 4.8),
-            new Product(2, "Quantum Laptop 15\"", 107817.00, "Electronics", "/images/laptop.png", 4.9),
-            new Product(3, "Sonic Wireless Headphones", 12409.00, "Electronics", "/images/headphones.png", 4.7),
-            new Product(4, "Elevate Series Watch", 24817.00, "Wearables", "/images/watch.png", 4.5),
-            new Product(5, "Aura Smart Lamp", 6639.00, "Home Decor", "/images/lamp.png", 4.6),
-            new Product(6, "Titan Gaming Mouse", 4979.00, "Accessories", "/images/mouse.png", 4.4)
-        );
+        this.productService = productService;
     }
 
     private String getIdentity(HttpSession session) {
@@ -54,7 +47,9 @@ public class EcomController {
     }
 
     @GetMapping("/")
-    public String home(Model model, HttpSession session) {
+    public String home(@RequestParam(required = false) String query, 
+                       @RequestParam(required = false) String sort,
+                       Model model, HttpSession session) {
         String identity = getIdentity(session);
         boolean isUser = isUsername();
         
@@ -63,7 +58,18 @@ public class EcomController {
             cartService.mergeCart(session.getId(), identity);
         }
 
-        model.addAttribute("products", getProducts());
+        List<Product> products;
+        if (query != null && !query.isEmpty()) {
+            products = productService.searchProducts(query);
+            model.addAttribute("searchQuery", query);
+        } else if (sort != null && !sort.isEmpty()) {
+            products = productService.getProductsSorted(sort);
+            model.addAttribute("activeSort", sort);
+        } else {
+            products = productService.getAllProducts();
+        }
+
+        model.addAttribute("products", products);
         model.addAttribute("categories", Arrays.asList("Electronics", "Wearables", "Home Decor", "Accessories", "Fashion"));
         model.addAttribute("cartCount", cartService.getItems(identity, isUser).size());
         return "home";
@@ -80,19 +86,21 @@ public class EcomController {
     }
 
     @PostMapping("/register")
-    public String processRegister(User user) {
-        userService.registerUser(user);
+    public String processRegister(User user, org.springframework.ui.Model model) {
+        User registered = userService.registerUser(user);
+        if (registered == null) {
+            model.addAttribute("error", "Username already taken. Please choose another one.");
+            return "register";
+        }
         return "redirect:/login";
     }
 
     @PostMapping("/cart/add")
-    public String addToCart(@RequestParam int productId, HttpSession session) {
+    public String addToCart(@RequestParam Long productId, HttpSession session) {
         String identity = getIdentity(session);
         boolean isUser = isUsername();
 
-        Optional<Product> product = getProducts().stream()
-                .filter(p -> p.getId() == productId)
-                .findFirst();
+        Optional<Product> product = productService.getProductById(productId);
         
         product.ifPresent(p -> {
             CartItem item = new CartItem(null, null, null, p.getId(), p.getName(), p.getPrice(), 1, p.getImageUrl());
@@ -112,7 +120,7 @@ public class EcomController {
     }
 
     @PostMapping("/cart/remove")
-    public String removeFromCart(@RequestParam int productId, HttpSession session) {
+    public String removeFromCart(@RequestParam Long productId, HttpSession session) {
         cartService.removeItem(productId, getIdentity(session), isUsername());
         return "redirect:/cart";
     }
@@ -137,6 +145,20 @@ public class EcomController {
     @GetMapping("/payment-success")
     public String paymentSuccess() {
         return "payment-success";
+    }
+
+    @GetMapping("/product/{id}")
+    public String productDetails(@PathVariable Long id, Model model, HttpSession session) {
+        String identity = getIdentity(session);
+        boolean isUser = isUsername();
+        
+        Optional<Product> product = productService.getProductById(id);
+        if (product.isPresent()) {
+            model.addAttribute("product", product.get());
+            model.addAttribute("cartCount", cartService.getItems(identity, isUser).size());
+            return "product";
+        }
+        return "redirect:/";
     }
 
     @GetMapping("/account")

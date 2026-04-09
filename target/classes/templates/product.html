@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name} + ' | Nebula'">Product Details | Nebula</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="glass">
+        <a th:href="@{/}" class="logo">NEBULA</a>
+        
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search for products...">
+        </div>
+        
+        <div class="nav-actions">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/account}" class="nav-link"><i class="fa-solid fa-user"></i> Account</a>
+            </div>
+            <div th:unless="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}" class="nav-link">Login</a>
+            </div>
+            <a th:href="@{/cart}" class="nav-link cart-icon-wrapper">
+                <i class="fa-solid fa-cart-shopping"></i> Cart
+                <span class="cart-count" th:text="${cartCount}">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a th:href="@{/}" class="nav-link" style="display: inline-block; margin-bottom: 30px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Shop
+        </a>
+
+        <div class="product-details-grid">
+            <div class="product-image-section">
+                <div class="product-main-img-card glass">
+                    <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-large-img">
+                    <span class="badge" th:text="${product.category}" style="top: 20px; left: 20px;">Category</span>
+                </div>
+            </div>
+
+            <div class="product-info-section">
+                <div class="product-meta-top">
+                    <span class="rating"><i class="fa-solid fa-star"></i> <span th:text="${product.rating}">4.5</span> (120+ Reviews)</span>
+                </div>
+                <h1 th:text="${product.name}" class="product-title-large">Product Name</h1>
+                <p class="product-price-large" th:text="'₹' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">₹0</p>
+                
+                <div class="product-description-container">
+                    <h3>Description</h3>
+                    <p th:text="${product.description}">Detailed product description goes here...</p>
+                </div>
+
+                <div class="product-features-mini">
+                    <div class="feature-tag"><i class="fa-solid fa-truck-fast"></i> Free Delivery</div>
+                    <div class="feature-tag"><i class="fa-solid fa-rotate-left"></i> 30-Day Returns</div>
+                    <div class="feature-tag"><i class="fa-solid fa-shield-halved"></i> 1-Year Warranty</div>
+                </div>
+
+                <form th:action="@{/cart/add}" method="post" style="margin-top: 40px;">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 18px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Premium Extras -->
+        <section style="margin-top: 80px;">
+            <div class="section-title">
+                <h2>Product Specifications</h2>
+            </div>
+            <div class="glass" style="padding: 40px; border-radius: 24px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
+                    <div>
+                        <h4 style="margin-bottom: 15px;">Hardware</h4>
+                        <p style="color: var(--text-muted);">Built with aerospace-grade materials for durability and a premium feel.</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px;">Performance</h4>
+                        <p style="color: var(--text-muted);">Optimized for high-efficiency and low latency in all the conditions.</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px;">Sustainability</h4>
+                        <p style="color: var(--text-muted);">100% recyclable packaging and eco-friendly manufacturing process.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container" style="background: var(--surface); margin: 80px 5% 0; border-radius: 24px 24px 0 0; padding: 40px;">
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            &copy; 2024 Nebula Platforms. All rights reserved. Built with Antigravity.
+        </div>
+    </footer>
+</body>
+</html>

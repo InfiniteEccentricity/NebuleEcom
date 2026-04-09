@@ -14,6 +14,11 @@
         <h1 class="auth-title">Create Account</h1>
         <p class="auth-subtitle">Join the revolution of premium shopping.</p>
 
+        <div th:if="${error}" class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; border: 1px solid rgba(239, 68, 68, 0.2);">
+            <i class="fa-solid fa-circle-exclamation" style="margin-right: 8px;"></i>
+            <span th:text="${error}">Error message</span>
+        </div>
+
         <form th:action="@{/register}" method="post">
             <div class="form-group">
                 <label for="username">Username</label>
