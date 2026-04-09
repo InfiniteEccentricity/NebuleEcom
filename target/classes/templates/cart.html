@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Nebula</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="glass">
+        <a th:href="@{/}" class="logo">NEBULA</a>
+        <div class="nav-actions">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <a th:href="@{/cart}" class="nav-link" style="color: var(--primary);"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 style="font-size: 2.5rem; margin-bottom: 40px; font-weight: 800;">Shopping Cart</h1>
+        
+        <div th:if="${items.isEmpty()}" style="text-align: center; padding: 60px;">
+            <i class="fa-solid fa-cart-plus" style="font-size: 4rem; color: var(--border); margin-bottom: 20px;"></i>
+            <h2>Your cart is empty</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Looks like you haven't added anything to your cart yet.</p>
+            <a th:href="@{/}" class="btn btn-primary">Start Shopping</a>
+        </div>
+
+        <div th:unless="${items.isEmpty()}" class="cart-grid">
+            <div class="cart-items">
+                <div th:each="item : ${items}" class="cart-item">
+                    <img th:src="${item.imageUrl}" th:alt="${item.productName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/100x100?text=Product'">
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-title" th:text="${item.productName}">Product Name</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Free Shipping</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="cart-item-price" th:text="'₹' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">₹0</div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Qty: <span th:text="${item.quantity}">1</span></p>
+                        <form th:action="@{/cart/remove}" method="post" style="margin-top: 5px;">
+                            <input type="hidden" name="productId" th:value="${item.productId}">
+                            <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <h2 style="margin-bottom: 20px;">Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span th:text="'₹' + ${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span style="color: #10b981; font-weight: 600;">FREE</span>
+                </div>
+                <div class="summary-row">
+                    <span>Taxes</span>
+                    <span th:text="'₹' + ${#numbers.formatDecimal(total * 0.18, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span th:text="'₹' + ${#numbers.formatDecimal(total * 1.18, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                </div>
+                <a th:href="@{/checkout}" class="btn btn-primary" style="width: 100%; margin-top: 20px; text-align: center;">Proceed to Checkout</a>
+                <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 15px;">
+                    <i class="fa-solid fa-shield-halved"></i> Secure Checkout Guaranteed
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
