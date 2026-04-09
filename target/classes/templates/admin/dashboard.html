@@ -48,30 +48,93 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Total Inventory</div>
+                <div class="stat-label">Total Inventory (SQL Aggregated)</div>
                 <div class="stat-value" th:text="${totalProducts}">0</div>
                 <div style="color: var(--success); font-size: 0.85rem; font-weight: 600;">
-                    <i class="fa-solid fa-arrow-up"></i> 12% increase
+                    <i class="fa-solid fa-database"></i> Live from DB
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Active Categories</div>
-                <div class="stat-value" th:text="${categories.size()}">0</div>
-                <div style="color: var(--text-muted); font-size: 0.85rem;">Diverse catalog</div>
+                <div class="stat-label">Registered Users</div>
+                <div class="stat-value" th:text="${totalUsers}">0</div>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">Active Accounts</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Stock Status</div>
-                <div class="stat-value">94%</div>
-                <div style="color: var(--success); font-size: 0.85rem; font-weight: 600;">Healthy</div>
+                <div class="stat-label">Product Categories</div>
+                <div class="stat-value" th:text="${totalCategories}">0</div>
+                <div style="color: var(--primary); font-size: 0.85rem; font-weight: 600;">Managed in SQL</div>
             </div>
         </div>
 
-        <h2 style="margin-bottom: 25px;">Catalog Distribution</h2>
-        <div class="stats-grid">
-            <div th:each="entry : ${categories}" class="stat-card" style="padding: 20px;">
-                <div class="stat-label" th:text="${entry.key}">Category</div>
-                <div class="stat-value" style="font-size: 1.5rem;" th:text="${entry.value}">0</div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Items in stock</p>
+        <!-- Database Systems Showcase Section -->
+        <h2 style="margin: 40px 0 25px; display: flex; align-items: center; gap: 15px;">
+            <i class="fa-solid fa-microchip" style="color: var(--primary);"></i> 
+            Database Systems Showcase
+        </h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; margin-bottom: 50px;">
+            <!-- Stored Procedure & Cursor Showcase -->
+            <div class="data-card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">
+                    <span class="badge" style="margin-bottom: 10px; display: inline-block;">Stored Procedure + CURSOR</span><br>
+                    Bulk Seasonal Discount
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px;">
+                    This form calls a <code>ProcessBulkDiscount</code> procedure that uses a <b>SQL CURSOR</b> to iterate through products row-by-row and apply discounts.
+                </p>
+                <form th:action="@{/admin/products/bulk-discount}" method="post">
+                    <div class="form-group">
+                        <label>Target Category</label>
+                        <select name="category" class="form-input">
+                            <option value="Electronics">Electronics</option>
+                            <option value="Wearables">Wearables</option>
+                            <option value="Home Decor">Home Decor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Discount Amount (%)</label>
+                        <input type="number" name="discount" class="form-input" value="10" min="1" max="90">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Execute Stored Procedure
+                    </button>
+                </form>
+            </div>
+
+            <!-- Trigger & Audit Log Showcase -->
+            <div class="data-card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">
+                    <span class="badge" style="margin-bottom: 10px; display: inline-block; background: rgba(16, 185, 129, 0.1); color: #10b981;">MySQL TRIGGER</span><br>
+                    Price Audit Logs
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                    The <code>log_price_change</code> trigger automatically populates this table whenever a product price is updated via the Admin UI.
+                </p>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>Prod ID</th>
+                                <th>Old Price</th>
+                                <th>New Price</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="log : ${auditLogs}">
+                                <td th:text="'#' + ${log.product_id}">#0</td>
+                                <td th:text="'₹' + ${log.old_price}">₹0</td>
+                                <td style="color: var(--success);" th:text="'₹' + ${log.new_price}">₹0</td>
+                                <td th:text="${#calendars.format(log.changed_at, 'dd MMM HH:mm')}">Time</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(auditLogs)}">
+                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    No price changes recorded yet. Try editing a product!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

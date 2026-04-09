@@ -1,5 +1,4 @@
 com/example/ecommerce/model/CartItem.class
-com/example/ecommerce/config/DataInitializer.class
 com/example/ecommerce/config/SecurityConfig.class
 com/example/ecommerce/service/CartService.class
 com/example/ecommerce/EcommerceApplication.class

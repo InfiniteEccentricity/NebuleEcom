@@ -14,21 +14,38 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final ProductService productService;
+    private final com.example.ecommerce.repository.ProductRepository productRepository;
 
-    public AdminController(ProductService productService) {
+    public AdminController(ProductService productService, com.example.ecommerce.repository.ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
     public String dashboard(Model model) {
-        List<Product> products = productService.getAllProducts();
-        model.addAttribute("totalProducts", products.size());
+        // Use SQL Stored Procedure for Stats (Showcase Feature)
+        List<Object[]> statsResult = productRepository.getDatabaseStats();
+        if (!statsResult.isEmpty()) {
+            Object[] stats = statsResult.get(0);
+            model.addAttribute("totalProducts", stats[0]);
+            model.addAttribute("totalUsers", stats[1]);
+            model.addAttribute("totalCategories", stats[2]);
+        }
         
-        // Stats: Products per category
-        model.addAttribute("categories", products.stream()
-                .collect(Collectors.groupingBy(Product::getCategory, Collectors.counting())));
+        // Product List for summary
+        model.addAttribute("products", productService.getAllProducts());
+        
+        // Fetch Audit Logs from SQL Trigger (Showcase Feature)
+        model.addAttribute("auditLogs", productRepository.getAuditLogs());
         
         return "admin/dashboard";
+    }
+
+    @PostMapping("/products/bulk-discount")
+    public String applyDiscount(@RequestParam String category, @RequestParam Double discount) {
+        // Use SQL Stored Procedure with CURSOR (Showcase Feature)
+        productRepository.applyBulkDiscount(category, discount);
+        return "redirect:/admin";
     }
 
     @GetMapping("/products")
