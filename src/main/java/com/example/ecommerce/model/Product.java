@@ -1,6 +1,9 @@
 package com.example.ecommerce.model;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -10,16 +13,23 @@ public class Product {
     private Long id;
     private String name;
     private double price;
-    private String category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     private String imageUrl;
     private double rating;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
     public Product() {}
 
-    public Product(Long id, String name, double price, String category, String imageUrl, double rating, String description) {
+    public Product(Long id, String name, double price, Category category, String imageUrl, double rating, String description) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -39,8 +49,13 @@ public class Product {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+
+    @Transient
+    public String getCategoryName() {
+        return category != null ? category.getName() : "";
+    }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
@@ -50,4 +65,7 @@ public class Product {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

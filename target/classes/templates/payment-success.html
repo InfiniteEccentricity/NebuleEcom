@@ -72,11 +72,24 @@
             </div>
             <h1 class="success-title">Payment Successful!</h1>
             <p style="color: var(--text-muted); line-height: 1.6;">
-                Your order has been placed successfully. A confirmation email has been sent to your registered address.
+                Your order has been placed successfully and saved to your order history.
             </p>
-            
-            <div class="order-id">
-                Order ID: #NB-<span th:text="${#strings.toUpperCase(#strings.randomAlphanumeric(10))}"></span>
+
+            <div th:if="${order != null}">
+                <div class="order-id">
+                    Order ID: <span th:text="${order.orderNumber}">NEB-ORDER</span>
+                </div>
+                <p style="color: var(--text-muted); margin-top: 12px;">
+                    Total Paid:
+                    <strong th:text="'Rs ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')}">Rs 0.00</strong>
+                </p>
+                <p style="color: var(--text-muted); margin-top: 8px;">
+                    Shipping to <span th:text="${order.customerName}">Customer Name</span>,
+                    <span th:text="${order.city}">City</span>
+                </p>
+            </div>
+            <div th:if="${order == null}" class="order-id">
+                Order details will appear here after the next successful payment.
             </div>
 
             <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">

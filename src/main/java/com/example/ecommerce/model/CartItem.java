@@ -9,54 +9,51 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sessionId;
-    private String username;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
-    private Long productId;
-    private String productName;
-    private double price;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     private int quantity;
-    private String imageUrl;
 
     public CartItem() {}
 
-    public CartItem(Long id, String sessionId, String username, Long productId, String productName, double price, int quantity, String imageUrl) {
+    public CartItem(Long id, Cart cart, Product product, int quantity) {
         this.id = id;
-        this.sessionId = sessionId;
-        this.username = username;
-        this.productId = productId;
-        this.productName = productName;
-        this.price = price;
+        this.cart = cart;
+        this.product = product;
         this.quantity = quantity;
-        this.imageUrl = imageUrl;
     }
 
     public double getTotalPrice() {
-        return price * quantity;
+        return getPrice() * quantity;
     }
 
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getSessionId() { return sessionId; }
-    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+    public Cart getCart() { return cart; }
+    public void setCart(Cart cart) { this.cart = cart; }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-
-    public Long getProductId() { return productId; }
-    public void setProductId(Long productId) { this.productId = productId; }
-
-    public String getProductName() { return productName; }
-    public void setProductName(String productName) { this.productName = productName; }
-
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    @Transient
+    public Long getProductId() { return product != null ? product.getId() : null; }
+
+    @Transient
+    public String getProductName() { return product != null ? product.getName() : ""; }
+
+    @Transient
+    public double getPrice() { return product != null ? product.getPrice() : 0.0; }
+
+    @Transient
+    public String getImageUrl() { return product != null ? product.getImageUrl() : null; }
 }

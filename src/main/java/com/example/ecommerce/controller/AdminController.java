@@ -1,23 +1,26 @@
 package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.Product;
+import com.example.ecommerce.service.CategoryService;
 import com.example.ecommerce.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     private final ProductService productService;
+    private final CategoryService categoryService;
     private final com.example.ecommerce.repository.ProductRepository productRepository;
 
-    public AdminController(ProductService productService, com.example.ecommerce.repository.ProductRepository productRepository) {
+    public AdminController(ProductService productService, CategoryService categoryService,
+                           com.example.ecommerce.repository.ProductRepository productRepository) {
         this.productService = productService;
+        this.categoryService = categoryService;
         this.productRepository = productRepository;
     }
 
@@ -34,6 +37,7 @@ public class AdminController {
         
         // Product List for summary
         model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("categories", categoryService.getAllCategories());
         
         // Fetch Audit Logs from SQL Trigger (Showcase Feature)
         model.addAttribute("auditLogs", productRepository.getAuditLogs());
@@ -57,18 +61,20 @@ public class AdminController {
     @GetMapping("/products/add")
     public String addProductForm(Model model) {
         model.addAttribute("product", new Product());
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "admin/product-form";
     }
 
     @GetMapping("/products/edit/{id}")
     public String editProductForm(@PathVariable Long id, Model model) {
         productService.getProductById(id).ifPresent(p -> model.addAttribute("product", p));
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "admin/product-form";
     }
 
     @PostMapping("/products/save")
-    public String saveProduct(@ModelAttribute Product product) {
-        productService.saveProduct(product);
+    public String saveProduct(@ModelAttribute Product product, @RequestParam Long categoryId) {
+        productService.saveProduct(product, categoryId);
         return "redirect:/admin/products";
     }
 

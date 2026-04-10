@@ -67,7 +67,7 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge" th:text="${product.category}">Category</span>
+                            <span class="badge" th:text="${product.categoryName}">Category</span>
                         </td>
                         <td style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">₹0.00</td>
                         <td>

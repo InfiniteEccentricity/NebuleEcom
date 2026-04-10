@@ -1,6 +1,7 @@
 package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.Product;
+import com.example.ecommerce.model.Category;
 import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +12,11 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryService categoryService;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
+        this.categoryService = categoryService;
     }
 
     public List<Product> getAllProducts() {
@@ -21,7 +24,7 @@ public class ProductService {
     }
 
     public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
+        return productRepository.findByCategory_Name(category);
     }
 
     public Optional<Product> getProductById(Long id) {
@@ -29,7 +32,7 @@ public class ProductService {
     }
 
     public List<Product> searchProducts(String query) {
-        return productRepository.findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCase(query, query);
+        return productRepository.findByNameContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(query, query);
     }
 
     public List<Product> getProductsSorted(String sort) {
@@ -42,6 +45,12 @@ public class ProductService {
     }
 
     public Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
+
+    public Product saveProduct(Product product, Long categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        product.setCategory(category);
         return productRepository.save(product);
     }
 

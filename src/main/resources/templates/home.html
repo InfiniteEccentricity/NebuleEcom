@@ -75,7 +75,7 @@
             <div th:each="product : ${products}" class="card">
                 <a th:href="@{/product/{id}(id=${product.id})}" style="text-decoration: none; color: inherit;">
                     <div class="card-img-container">
-                        <span class="badge" th:text="${product.category}">Category</span>
+                        <span class="badge" th:text="${product.categoryName}">Category</span>
                         <img th:src="${product.imageUrl}" th:alt="${product.name}" class="card-img" onerror="this.src='https://via.placeholder.com/400x300?text=Product'">
                     </div>
                     <div class="card-meta" style="margin-bottom: 5px;">

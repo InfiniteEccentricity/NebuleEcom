@@ -13,8 +13,8 @@ import java.util.Map;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByCategory(String category);
-    List<Product> findByNameContainingIgnoreCaseOrCategoryContainingIgnoreCase(String name, String category);
+    List<Product> findByCategory_Name(String category);
+    List<Product> findByNameContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(String name, String category);
     List<Product> findAllByOrderByIdDesc();
     List<Product> findAllByOrderByRatingDesc();
 

@@ -65,12 +65,20 @@
                     </div>
                     <div style="background: var(--background); padding: 15px; border-radius: 12px;">
                         <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Recent Orders</div>
-                        <div style="margin-top: 10px; font-size: 0.9rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <span style="color: var(--primary); font-weight: 600;">#NEB-948271</span>
-                                <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Shipped</span>
+                        <div th:if="${#lists.isEmpty(orders)}" style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">
+                            No orders yet. Your completed checkouts will appear here.
+                        </div>
+                        <div th:each="order : ${orders}" style="margin-top: 12px; font-size: 0.9rem; padding-top: 12px; border-top: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; gap: 12px;">
+                                <span style="color: var(--primary); font-weight: 600;" th:text="${order.orderNumber}">NEB-ORDER</span>
+                                <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;" th:text="${order.status}">PAID</span>
                             </div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Placed on April 9, 2026</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">
+                                Placed on <span th:text="${order.createdAt}">2026-04-10T10:30</span>
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
+                                Total: <span th:text="'Rs ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')}">Rs 0.00</span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,9 @@
 package com.example.ecommerce.model;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -15,9 +18,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true)
     private String email;
 
     private String role; // e.g., ROLE_USER, ROLE_ADMIN
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public User() {}
 
@@ -44,4 +51,7 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

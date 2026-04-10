@@ -22,6 +22,9 @@ public class UserService {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return null; // Username already exists
         }
+        if (user.getEmail() != null && userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return null;
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Set default role if not present
         if (user.getRole() == null) {
@@ -39,6 +42,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         if (email != null && !email.isEmpty()) {
+            userRepository.findByEmail(email)
+                    .filter(existing -> !existing.getId().equals(user.getId()))
+                    .ifPresent(existing -> { throw new RuntimeException("Email already in use"); });
             user.setEmail(email);
         }
         

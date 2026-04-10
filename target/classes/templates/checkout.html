@@ -36,6 +36,10 @@
                         <label>Address</label>
                         <input type="text" id="address" class="form-input" placeholder="123 Nebula Lane" required>
                     </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="john@example.com" th:value="${accountEmail}" required>
+                    </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                         <div class="form-group">
                             <label>City</label>
@@ -94,13 +98,25 @@
         const amount = [[${total * 1.18}]];
         const razorpayKey = [[${@environment.getProperty('razorpay.key.id')}]];
         
+        function getShippingDetails() {
+            return {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                zip: document.getElementById('zip').value.trim()
+            };
+        }
+        
         document.getElementById('pay-button').onclick = async function(e) {
             e.preventDefault();
             
             // Validate form
-            const requiredFields = ['firstName', 'lastName', 'address', 'city', 'state', 'zip'];
+            const requiredFields = ['firstName', 'lastName', 'address', 'email', 'city', 'state', 'zip'];
             for(let field of requiredFields) {
-                if(!document.getElementById(field).value) {
+                if(!document.getElementById(field).value.trim()) {
                     alert('Please fill in all shipping details first.');
                     return;
                 }
@@ -115,7 +131,7 @@
                 const response = await fetch('/api/payment/create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: amount })
+                    body: JSON.stringify({ amount: amount, ...getShippingDetails() })
                 });
                 
                 if (!response.ok) {
@@ -138,7 +154,7 @@
                     },
                     "prefill": {
                         "name": document.getElementById('firstName').value + " " + document.getElementById('lastName').value,
-                        "email": "test@example.com"
+                        "email": document.getElementById('email').value
                     },
                     "theme": {
                         "color": "#6366f1"
@@ -164,14 +180,16 @@
 
         async function verifyPayment(paymentResponse) {
             try {
+                const payload = { ...paymentResponse, ...getShippingDetails() };
                 const response = await fetch('/api/payment/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(paymentResponse)
+                    body: JSON.stringify(payload)
                 });
                 
                 if (response.ok) {
-                    window.location.href = '/payment-success';
+                    const data = await response.json();
+                    window.location.href = '/payment-success?orderNumber=' + encodeURIComponent(data.orderNumber);
                 } else {
                     alert('Payment verification failed!');
                 }

@@ -4,6 +4,8 @@ import com.example.ecommerce.model.CartItem;
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.service.CartService;
+import com.example.ecommerce.service.CategoryService;
+import com.example.ecommerce.service.OrderService;
 import com.example.ecommerce.service.ProductService;
 import com.example.ecommerce.service.UserService;
 import javax.servlet.http.HttpSession;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +27,16 @@ public class EcomController {
     private final CartService cartService;
     private final UserService userService;
     private final ProductService productService;
+    private final OrderService orderService;
+    private final CategoryService categoryService;
 
-    public EcomController(CartService cartService, UserService userService, ProductService productService) {
+    public EcomController(CartService cartService, UserService userService, ProductService productService,
+                          OrderService orderService, CategoryService categoryService) {
         this.cartService = cartService;
         this.userService = userService;
         this.productService = productService;
+        this.orderService = orderService;
+        this.categoryService = categoryService;
     }
 
     private String getIdentity(HttpSession session) {
@@ -70,7 +76,7 @@ public class EcomController {
         }
 
         model.addAttribute("products", products);
-        model.addAttribute("categories", Arrays.asList("Electronics", "Wearables", "Home Decor", "Accessories", "Fashion"));
+        model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("cartCount", cartService.getItems(identity, isUser).size());
         return "home";
     }
@@ -102,10 +108,7 @@ public class EcomController {
 
         Optional<Product> product = productService.getProductById(productId);
         
-        product.ifPresent(p -> {
-            CartItem item = new CartItem(null, null, null, p.getId(), p.getName(), p.getPrice(), 1, p.getImageUrl());
-            cartService.addItem(item, identity, isUser);
-        });
+        product.ifPresent(p -> cartService.addItem(p, identity, isUser));
         
         return "redirect:/cart";
     }
@@ -133,6 +136,9 @@ public class EcomController {
             return "redirect:/cart";
         }
         model.addAttribute("total", cartService.getTotalAmount(identity, isUser));
+        if (isUser) {
+            userService.findByUsername(identity).ifPresent(user -> model.addAttribute("accountEmail", user.getEmail()));
+        }
         return "checkout";
     }
 
@@ -143,7 +149,18 @@ public class EcomController {
     }
 
     @GetMapping("/payment-success")
-    public String paymentSuccess() {
+    public String paymentSuccess(@RequestParam(required = false) String orderNumber, Model model, HttpSession session) {
+        String resolvedOrderNumber = orderNumber;
+        if (resolvedOrderNumber == null || resolvedOrderNumber.isEmpty()) {
+            Object lastOrderNumber = session.getAttribute("lastOrderNumber");
+            if (lastOrderNumber != null) {
+                resolvedOrderNumber = lastOrderNumber.toString();
+            }
+        }
+
+        if (resolvedOrderNumber != null && !resolvedOrderNumber.isEmpty()) {
+            orderService.findByOrderNumber(resolvedOrderNumber).ifPresent(order -> model.addAttribute("order", order));
+        }
         return "payment-success";
     }
 
@@ -171,6 +188,7 @@ public class EcomController {
         Optional<User> user = userService.findByUsername(username);
         user.ifPresent(u -> model.addAttribute("user", u));
         model.addAttribute("cartCount", cartService.getItems(username, true).size());
+        model.addAttribute("orders", orderService.getOrdersForUser(username));
         return "account";
     }
 
