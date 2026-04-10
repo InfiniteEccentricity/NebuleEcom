@@ -14,5 +14,4 @@ INSERT INTO products (name, price, category_id, image_url, rating, description) 
 ('Titan Gaming Mouse', 4979.00, 4, '/images/mouse.png', 4.4, 'Dominate the competition with the Titan Gaming Mouse. Boasting a 25K DPI optical sensor, customizable RGB lighting, and 11 programmable buttons. Engineered for speed, accuracy, and endurance.');;
 
 -- Insert default admin account (Password: admin123)
-INSERT INTO users (username, password, email, role) VALUES
-('admin', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqq31m', 'admin@nebula.com', 'ROLE_ADMIN');;
+

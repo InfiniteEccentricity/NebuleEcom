@@ -186,7 +186,12 @@ public class EcomController {
         }
         
         Optional<User> user = userService.findByUsername(username);
-        user.ifPresent(u -> model.addAttribute("user", u));
+        if (user.isEmpty()) {
+            SecurityContextHolder.clearContext(); // Session is out of sync with DB
+            return "redirect:/login?error";
+        }
+        
+        model.addAttribute("user", user.get());
         model.addAttribute("cartCount", cartService.getItems(username, true).size());
         model.addAttribute("orders", orderService.getOrdersForUser(username));
         return "account";

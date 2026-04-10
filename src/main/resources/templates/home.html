@@ -25,6 +25,9 @@
                 <i class="fa-solid fa-moon"></i>
             </button>
             <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <a th:if="${#authorization.expression('hasAuthority(''ROLE_ADMIN'')')}" th:href="@{/admin}" class="nav-link" style="color: var(--primary); font-weight: 600;">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
                 <a th:href="@{/account}" class="nav-link"><i class="fa-solid fa-user"></i> Account</a>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="nav-link" style="background: none; border: none; cursor: pointer; font-family: inherit;">Logout</button>
