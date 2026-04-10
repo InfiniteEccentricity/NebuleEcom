@@ -16,12 +16,18 @@ public class AdminController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final com.example.ecommerce.repository.ProductRepository productRepository;
+    private final com.example.ecommerce.repository.UserRepository userRepository;
+    private final com.example.ecommerce.repository.OrderRepository orderRepository;
 
     public AdminController(ProductService productService, CategoryService categoryService,
-                           com.example.ecommerce.repository.ProductRepository productRepository) {
+                           com.example.ecommerce.repository.ProductRepository productRepository,
+                           com.example.ecommerce.repository.UserRepository userRepository,
+                           com.example.ecommerce.repository.OrderRepository orderRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
     @GetMapping
@@ -82,5 +88,23 @@ public class AdminController {
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return "redirect:/admin/products";
+    }
+
+    @GetMapping("/customers")
+    public String listCustomers(Model model) {
+        model.addAttribute("customers", userRepository.findAllCustomersWithOrderCounts());
+        return "admin/customers";
+    }
+
+    @GetMapping("/orders")
+    public String listOrders(Model model) {
+        model.addAttribute("orders", orderRepository.findAllOrdersNative());
+        return "admin/orders";
+    }
+
+    @PostMapping("/orders/status")
+    public String updateOrderStatus(@RequestParam Long orderId, @RequestParam String status) {
+        orderRepository.updateOrderStatus(orderId, status);
+        return "redirect:/admin/orders";
     }
 }

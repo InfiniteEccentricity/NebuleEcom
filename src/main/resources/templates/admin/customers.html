@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customers | Nebula Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div class="sidebar">
+        <a th:href="@{/}" class="logo-admin">NEBULA<span style="color: white; font-size: 0.8rem; vertical-align: super;">ADM</span></a>
+        
+        <a th:href="@{/admin}" class="nav-item">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a th:href="@{/admin/products}" class="nav-item">
+            <i class="fa-solid fa-box"></i> Products
+        </a>
+        <a th:href="@{/admin/customers}" class="nav-item active">
+            <i class="fa-solid fa-users"></i> Customers
+        </a>
+        <a th:href="@{/admin/orders}" class="nav-item">
+            <i class="fa-solid fa-receipt"></i> Orders
+        </a>
+        
+        <div style="margin-top: auto;">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="nav-item" style="background: none; border: none; width: 100%; cursor: pointer; font-family: inherit;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div>
+                <h1 style="font-size: 1.8rem; font-weight: 800;">Customer Management</h1>
+                <p style="color: var(--text-muted);">View and manage your registered user base.</p>
+            </div>
+        </header>
+
+        <div class="data-card" style="margin-top: 30px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Orders</th>
+                        <th>Member Since</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="customer : ${customers}">
+                        <td th:text="'#' + ${customer.id}">#1</td>
+                        <td style="font-weight: 600;" th:text="${customer.username}">Username</td>
+                        <td th:text="${customer.email}">email@example.com</td>
+                        <td>
+                            <span class="badge" th:text="${customer.order_count} + ' Orders'">0 Orders</span>
+                        </td>
+                        <td th:text="${#calendars.format(customer.created_at, 'dd MMM yyyy')}">Date</td>
+                        <td>
+                            <span style="color: var(--success); font-size: 0.85rem;">
+                                <i class="fa-solid fa-circle-check"></i> Active
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(customers)}">
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            No customers found in the database.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -16,6 +16,7 @@
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/repository/UserRepository.java
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/service/UserService.java
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/repository/CategoryRepository.java
+/media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/config/AdminUserSeeder.java
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/service/OrderService.java
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/model/Cart.java
 /media/noirphantom/Windows/Users/anu19/.gemini/antigravity/scratch/ecom/src/main/java/com/example/ecommerce/model/User.java

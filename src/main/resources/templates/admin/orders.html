@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders | Nebula Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div class="sidebar">
+        <a th:href="@{/}" class="logo-admin">NEBULA<span style="color: white; font-size: 0.8rem; vertical-align: super;">ADM</span></a>
+        
+        <a th:href="@{/admin}" class="nav-item">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a th:href="@{/admin/products}" class="nav-item">
+            <i class="fa-solid fa-box"></i> Products
+        </a>
+        <a th:href="@{/admin/customers}" class="nav-item">
+            <i class="fa-solid fa-users"></i> Customers
+        </a>
+        <a th:href="@{/admin/orders}" class="nav-item active">
+            <i class="fa-solid fa-receipt"></i> Orders
+        </a>
+        
+        <div style="margin-top: auto;">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="nav-item" style="background: none; border: none; width: 100%; cursor: pointer; font-family: inherit;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div>
+                <h1 style="font-size: 1.8rem; font-weight: 800;">Order Management</h1>
+                <p style="color: var(--text-muted);">Monitor sales and update fulfillment status.</p>
+            </div>
+        </header>
+
+        <div class="data-card" style="margin-top: 30px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td style="font-family: monospace; font-weight: 600; color: var(--primary);" th:text="${order.order_number}">NEB-123</td>
+                        <td th:text="${order.customer_name}">Name</td>
+                        <td style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(order.total_amount, 0, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                        <td th:text="${#calendars.format(order.created_at, 'dd MMM HH:mm')}">Date</td>
+                        <td>
+                            <span class="badge" 
+                                  th:style="${order.status == 'DELIVERED'} ? 'background: rgba(16, 185, 129, 0.1); color: #10b981;' : 'background: rgba(99, 102, 241, 0.1); color: var(--primary);'"
+                                  th:text="${order.status}">PENDING</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/orders/status}" method="post" style="display: flex; gap: 8px;">
+                                <input type="hidden" name="orderId" th:value="${order.id}">
+                                <select name="status" class="form-input" style="padding: 4px 8px; font-size: 0.8rem; width: auto; margin-bottom: 0;">
+                                    <option value="PENDING" th:selected="${order.status == 'PENDING'}">Pending</option>
+                                    <option value="SHIPPED" th:selected="${order.status == 'SHIPPED'}">Shipped</option>
+                                    <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">Delivered</option>
+                                    <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">Cancelled</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            No orders have been placed yet.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
